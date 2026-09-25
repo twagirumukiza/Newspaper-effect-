@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newspaper — Journal</title>
+  <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700;900&family=Roboto+Slab:wght@300;400;700&family=Special+Elite&family=IM+Fell+English:ital@0;1&display=swap');
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background: #222; display: flex; justify-content: center; padding: 2rem; }
+        
+.newspaper {
+  width: 800px; max-width: 100%;
+  background: #f5f0e6; color: #1a1a1a;
+  padding: 28px 32px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  position: relative;
+  font-family: 'Libre Baskerville', Georgia, serif;
+  line-height: 1.45;
+}
+.newspaper.paper-aged { background: linear-gradient(175deg, #f0e6d0 0%, #e8dcc0 40%, #e0d0b0 100%); }
+.newspaper.paper-sepia { background: #e8d9b8; filter: sepia(0.25); }
+.newspaper.paper-old {
+  background:
+    linear-gradient(to bottom, transparent 0%, rgba(139,90,43,0.04) 100%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E"),
+    linear-gradient(165deg, #f2e6c9, #e5d4a8 50%, #dcc89a);
+}
+.newspaper.paper-vintage {
+  background:
+    radial-gradient(ellipse at 20% 30%, rgba(180,140,80,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(160,120,60,0.1) 0%, transparent 45%),
+    linear-gradient(180deg, #f5ead0, #e8d8b0);
+}
+.newspaper.paper-white { background: #fafafa; }
+.newspaper.paper-cream { background: #f8f1e3; }
+.newspaper.paper-newsprint {
+  background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.015) 1px, rgba(0,0,0,0.015) 2px), #f2efe6;
+}
+.newspaper::before { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 10; opacity: 0; }
+.newspaper.effect-fold::before {
+  opacity: 1;
+  background:
+    linear-gradient(90deg, transparent 48%, rgba(0,0,0,0.04) 49.5%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.04) 50.5%, transparent 52%),
+    linear-gradient(0deg, transparent 48%, rgba(0,0,0,0.03) 49.5%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.03) 50.5%, transparent 52%);
+}
+.newspaper.effect-stains::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 9;
+  background:
+    radial-gradient(ellipse 80px 50px at 15% 20%, rgba(139,90,43,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 60px 40px at 85% 75%, rgba(120,80,30,0.1) 0%, transparent 70%),
+    radial-gradient(ellipse 40px 30px at 70% 15%, rgba(100,70,20,0.08) 0%, transparent 70%),
+    radial-gradient(ellipse 50px 35px at 25% 85%, rgba(130,85,35,0.09) 0%, transparent 70%);
+}
+.newspaper.effect-grain::before {
+  opacity: 1;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+.newspaper.effect-torn {
+  clip-path: polygon(0% 1%, 2% 0%, 5% 1.5%, 8% 0.5%, 12% 1.2%, 15% 0%, 20% 1%, 25% 0.3%, 30% 1.1%, 35% 0%, 40% 0.8%, 45% 0.2%, 50% 1%, 55% 0.4%, 60% 1.2%, 65% 0%, 70% 0.9%, 75% 0.3%, 80% 1.1%, 85% 0.2%, 90% 1%, 95% 0.5%, 98% 1.2%, 100% 0.3%, 100% 99%, 98% 100%, 95% 98.8%, 90% 99.5%, 85% 98.7%, 80% 99.8%, 75% 99%, 70% 99.6%, 65% 98.9%, 60% 99.7%, 55% 99.1%, 50% 99.9%, 45% 99%, 40% 99.5%, 35% 98.8%, 30% 99.6%, 25% 99.2%, 20% 99.8%, 15% 99%, 10% 99.5%, 5% 98.7%, 2% 99.8%, 0% 99.2%);
+}
+.masthead { text-align: center; border-bottom: 3px double #1a1a1a; padding-bottom: 10px; margin-bottom: 12px; position: relative; z-index: 1; }
+.masthead .top-row { display: flex; justify-content: space-between; align-items: flex-start; font-size: 0.65rem; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px; color: #444; }
+.masthead .top-row .box { border: 1px solid #333; padding: 3px 8px; max-width: 140px; text-align: left; line-height: 1.3; }
+.masthead .title { font-family: 'Playfair Display', 'Cinzel', serif; font-size: 3.2rem; font-weight: 900; letter-spacing: 0.02em; line-height: 1; margin: 4px 0; }
+.masthead .date { font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase; color: #555; margin-top: 4px; }
+.main-headline { text-align: center; margin: 14px 0 10px; position: relative; z-index: 1; }
+.main-headline h1 { font-family: 'Playfair Display', Georgia, serif; font-size: 2.1rem; font-weight: 900; line-height: 1.15; letter-spacing: -0.01em; margin-bottom: 6px; }
+.main-headline .subhead { font-size: 1.05rem; font-weight: 400; font-style: italic; color: #333; line-height: 1.3; }
+.np-body { display: grid; gap: 14px 16px; position: relative; z-index: 1; }
+.np-body.cols-1 { grid-template-columns: 1fr; }
+.np-body.cols-2 { grid-template-columns: 1fr 1fr; }
+.np-body.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+.np-body.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+.np-body.cols-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+.story { break-inside: avoid; }
+.story.featured { grid-column: 1 / -1; display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px; margin-bottom: 4px; padding-bottom: 12px; border-bottom: 1px solid #ccc; }
+.story.featured .story-img { width: 100%; aspect-ratio: 16/10; background: #c8c0b0; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.75rem; font-style: italic; }
+.story.featured .story-text h2 { font-size: 1.15rem; font-weight: 700; margin-bottom: 6px; line-height: 1.25; }
+.story h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 5px; line-height: 1.25; border-bottom: 1px solid #bbb; padding-bottom: 3px; }
+.story p { font-size: 0.72rem; text-align: justify; hyphens: auto; margin-bottom: 0.45em; }
+.story .byline { font-size: 0.65rem; font-style: italic; color: #555; margin-bottom: 4px; }
+.story-img-small { width: 100%; aspect-ratio: 4/3; background: #c8c0b0; margin-bottom: 6px; display: flex; align-items: center; justify-content: center; color: #666; font-size: 0.65rem; font-style: italic; }
+.np-footer { margin-top: 16px; padding-top: 8px; border-top: 2px solid #1a1a1a; font-size: 0.6rem; text-align: center; color: #666; position: relative; z-index: 1; }
+.font-playfair { font-family: 'Playfair Display', Georgia, serif; }
+.font-baskerville { font-family: 'Libre Baskerville', Georgia, serif; }
+.font-merriweather { font-family: 'Merriweather', Georgia, serif; }
+.font-oldstandard { font-family: 'Old Standard TT', 'Times New Roman', serif; }
+.font-cinzel .masthead .title { font-family: 'Cinzel', serif; }
+.font-robotoslab { font-family: 'Roboto Slab', Georgia, serif; }
+.font-specialelite { font-family: 'Special Elite', 'Courier New', monospace; }
+.font-imfell { font-family: 'IM Fell English', Georgia, serif; }
+      
+      </style>
+</head>
+<body>
+  <article class="newspaper paper-aged font-baskerville effect-stains" id="newspaper" style="color: rgb(26, 26, 26); transform: rotate(0deg);">
+        <header class="masthead">
+          <div class="top-row">
+            <div class="box">Quis nostrud exercitation ullamco laboris</div>
+            <div class="box" style="text-align:right">Lorem ipsum dolor sit amet, consectetur</div>
+          </div>
+          <div class="title" style="font-size:3.2rem">Newspaper</div>
+          <div class="date">VENDREDI 19 OCTOBRE 2018</div>
+        </header>
+        <div class="main-headline">
+          <h1>LOREM IPSUM DOLOR</h1>
+          <div class="subhead">Ut enim ad minim veniam, quis nostrud exercitation laboris nisi ut aliquip ex ea commodo consequat</div>
+        </div>
+        <div class="np-body cols-3">
+      
+          <div class="story featured">
+            <div class="story-img">[ Image principale ]</div>
+            <div class="story-text">
+              <h2>Duis aute irure dolor in reprehenderit</h2>
+              <p class="byline">Par la rédaction — Édition du jour</p>
+              <p style="font-size:0.72rem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            </div>
+          </div>
+        <div class="story"><div class="story-img-small">[ Illustration ]</div>
+          <h3>Excepteur sint occaecat cupidatat non</h3>
+          <p style="font-size:0.72rem">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div><div class="story">
+          <h3>Sunt in culpa qui officia deserunt</h3>
+          <p style="font-size:0.72rem">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+        </div><div class="story">
+          <h3>Ut enim ad minim veniam</h3>
+          <p style="font-size:0.72rem">Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
+        </div><div class="story"><div class="story-img-small">[ Illustration ]</div>
+          <h3>Occaecat cupidatat</h3>
+          <p style="font-size:0.72rem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div><div class="story">
+          <h3>Exercitation ullamco</h3>
+          <p style="font-size:0.72rem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        </div>
+        </div>
+        <footer class="np-footer">
+          © 2026 — Généré avec Newspaper Page Builder — Tous droits réservés
+        </footer>
+      </article>
+</body>
+</html>
