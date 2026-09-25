@@ -3,12 +3,1036 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Newspaper — Journal</title>
+  <title>Générateur de Journal — Newspaper Page Builder</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700;900&family=Roboto+Slab:wght@300;400;700&family=Special+Elite&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --panel-bg: #1a1a1a;
+      --panel-text: #e8e8e8;
+      --accent: #c9a227;
+      --accent-hover: #e0b83a;
+      --border: #333;
+      --input-bg: #2a2a2a;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #111;
+      color: var(--panel-text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header.app-header {
+      background: linear-gradient(135deg, #1f1f1f, #2a2a2a);
+      border-bottom: 2px solid var(--accent);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    header.app-header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.03em;
+    }
+
+    header.app-header .subtitle {
+      font-size: 0.8rem;
+      color: #999;
+      margin-left: 0.5rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: #111;
+      border: none;
+      padding: 0.5rem 1rem;
+      font-weight: 600;
+      font-size: 0.85rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn:hover { background: var(--accent-hover); }
+    .btn:active { transform: scale(0.97); }
+    .btn.secondary {
+      background: transparent;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+    }
+    .btn.secondary:hover { background: rgba(201,162,39,0.15); }
+    .btn.danger {
+      background: #8b2942;
+      color: #fff;
+    }
+    .btn.danger:hover { background: #a33a55; }
+
+    .main-layout {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    /* ===== CONTROL PANEL ===== */
+    .controls {
+      width: 340px;
+      min-width: 300px;
+      background: var(--panel-bg);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .control-section {
+      background: #222;
+      border-radius: 8px;
+      padding: 0.9rem;
+      border: 1px solid #333;
+    }
+
+    .control-section h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .control-section h3::before {
+      content: '';
+      width: 4px;
+      height: 14px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: #bbb;
+      margin-bottom: 0.25rem;
+      margin-top: 0.55rem;
+    }
+
+    label:first-of-type { margin-top: 0; }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid #444;
+      color: #eee;
+      padding: 0.4rem 0.55rem;
+      border-radius: 4px;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--accent);
+    }
+
+    textarea { resize: vertical; min-height: 60px; font-family: inherit; }
+
+    input[type="color"] {
+      width: 100%;
+      height: 34px;
+      border: 1px solid #444;
+      border-radius: 4px;
+      background: var(--input-bg);
+      cursor: pointer;
+      padding: 2px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .range-value {
+      font-size: 0.75rem;
+      color: var(--accent);
+      float: right;
+    }
+
+    .checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .checkbox-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--accent);
+    }
+
+    .checkbox-row label {
+      margin: 0;
+      cursor: pointer;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+    }
+
+    /* ===== PREVIEW AREA ===== */
+    .preview-wrap {
+      flex: 1;
+      overflow: auto;
+      background: #0d0d0d;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .preview-scale {
+      transform-origin: top center;
+      transition: transform 0.2s;
+    }
+
+    /* ===== NEWSPAPER STYLES ===== */
+    .newspaper {
+      width: 800px;
+      background: #f5f0e6;
+      color: #1a1a1a;
+      padding: 28px 32px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,0,0,0.1);
+      position: relative;
+      font-family: 'Libre Baskerville', Georgia, serif;
+      line-height: 1.45;
+      transition: background 0.3s, color 0.3s, filter 0.3s;
+    }
+
+    /* Paper textures & effects */
+    .newspaper.paper-aged {
+      background: linear-gradient(175deg, #f0e6d0 0%, #e8dcc0 40%, #e0d0b0 100%);
+    }
+
+    .newspaper.paper-sepia {
+      background: #e8d9b8;
+      filter: sepia(0.25);
+    }
+
+    .newspaper.paper-old {
+      background:
+        linear-gradient(to bottom, transparent 0%, rgba(139,90,43,0.04) 100%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.08'/%3E%3C/svg%3E"),
+        linear-gradient(165deg, #f2e6c9, #e5d4a8 50%, #dcc89a);
+    }
+
+    .newspaper.paper-vintage {
+      background:
+        radial-gradient(ellipse at 20% 30%, rgba(180,140,80,0.12) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(160,120,60,0.1) 0%, transparent 45%),
+        linear-gradient(180deg, #f5ead0, #e8d8b0);
+    }
+
+    .newspaper.paper-white {
+      background: #fafafa;
+    }
+
+    .newspaper.paper-cream {
+      background: #f8f1e3;
+    }
+
+    .newspaper.paper-newsprint {
+      background:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 1px,
+          rgba(0,0,0,0.015) 1px,
+          rgba(0,0,0,0.015) 2px
+        ),
+        #f2efe6;
+    }
+
+    /* Overlay effects */
+    .newspaper::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .newspaper.effect-fold::before {
+      opacity: 1;
+      background:
+        linear-gradient(90deg, transparent 48%, rgba(0,0,0,0.04) 49.5%, rgba(0,0,0,0.06) 50%, rgba(0,0,0,0.04) 50.5%, transparent 52%),
+        linear-gradient(0deg, transparent 48%, rgba(0,0,0,0.03) 49.5%, rgba(0,0,0,0.05) 50%, rgba(0,0,0,0.03) 50.5%, transparent 52%);
+    }
+
+    .newspaper.effect-stains::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9;
+      background:
+        radial-gradient(ellipse 80px 50px at 15% 20%, rgba(139,90,43,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 60px 40px at 85% 75%, rgba(120,80,30,0.1) 0%, transparent 70%),
+        radial-gradient(ellipse 40px 30px at 70% 15%, rgba(100,70,20,0.08) 0%, transparent 70%),
+        radial-gradient(ellipse 50px 35px at 25% 85%, rgba(130,85,35,0.09) 0%, transparent 70%);
+    }
+
+    .newspaper.effect-grain {
+      position: relative;
+    }
+
+    .newspaper.effect-grain::before {
+      opacity: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.12'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+
+    .newspaper.effect-torn {
+      clip-path: polygon(
+        0% 1%, 2% 0%, 5% 1.5%, 8% 0.5%, 12% 1.2%, 15% 0%, 20% 1%, 25% 0.3%, 30% 1.1%, 35% 0%,
+        40% 0.8%, 45% 0.2%, 50% 1%, 55% 0.4%, 60% 1.2%, 65% 0%, 70% 0.9%, 75% 0.3%, 80% 1.1%,
+        85% 0.2%, 90% 1%, 95% 0.5%, 98% 1.2%, 100% 0.3%,
+        100% 99%, 98% 100%, 95% 98.8%, 90% 99.5%, 85% 98.7%, 80% 99.8%, 75% 99%, 70% 99.6%,
+        65% 98.9%, 60% 99.7%, 55% 99.1%, 50% 99.9%, 45% 99%, 40% 99.5%, 35% 98.8%, 30% 99.6%,
+        25% 99.2%, 20% 99.8%, 15% 99%, 10% 99.5%, 5% 98.7%, 2% 99.8%, 0% 99.2%
+      );
+    }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      border-bottom: 3px double #1a1a1a;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .masthead .top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+      color: #444;
+    }
+
+    .masthead .top-row .box {
+      border: 1px solid #333;
+      padding: 3px 8px;
+      max-width: 140px;
+      text-align: left;
+      line-height: 1.3;
+    }
+
+    .masthead .title {
+      font-family: 'Playfair Display', 'Cinzel', serif;
+      font-size: 3.2rem;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      line-height: 1;
+      margin: 4px 0;
+    }
+
+    .masthead .date {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #555;
+      margin-top: 4px;
+    }
+
+    /* Main headline */
+    .main-headline {
+      text-align: center;
+      margin: 14px 0 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main-headline h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.1rem;
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+      margin-bottom: 6px;
+    }
+
+    .main-headline .subhead {
+      font-size: 1.05rem;
+      font-weight: 400;
+      font-style: italic;
+      color: #333;
+      line-height: 1.3;
+    }
+
+    /* Body layout */
+    .np-body {
+      display: grid;
+      gap: 14px 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .np-body.cols-1 { grid-template-columns: 1fr; }
+    .np-body.cols-2 { grid-template-columns: 1fr 1fr; }
+    .np-body.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .np-body.cols-4 { grid-template-columns: 1fr 1fr 1fr 1fr; }
+    .np-body.cols-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+
+    .story {
+      break-inside: avoid;
+    }
+
+    .story.featured {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 14px;
+      margin-bottom: 4px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .story.featured .story-img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      background: #c8c0b0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 0.75rem;
+      font-style: italic;
+      object-fit: cover;
+    }
+
+    .story.featured .story-text h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      line-height: 1.25;
+    }
+
+    .story h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+      line-height: 1.25;
+      border-bottom: 1px solid #bbb;
+      padding-bottom: 3px;
+    }
+
+    .story p {
+      font-size: 0.72rem;
+      text-align: justify;
+      hyphens: auto;
+      margin-bottom: 0.45em;
+    }
+
+    .story .byline {
+      font-size: 0.65rem;
+      font-style: italic;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .story-img-small {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: #c8c0b0;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+      font-size: 0.65rem;
+      font-style: italic;
+    }
+
+    /* Horizontal rule sections */
+    .section-divider {
+      grid-column: 1 / -1;
+      border: none;
+      border-top: 2px solid #1a1a1a;
+      margin: 4px 0;
+    }
+
+    /* Footer */
+    .np-footer {
+      margin-top: 16px;
+      padding-top: 8px;
+      border-top: 2px solid #1a1a1a;
+      font-size: 0.6rem;
+      text-align: center;
+      color: #666;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Font families applied to .newspaper */
+    .font-playfair { font-family: 'Playfair Display', Georgia, serif; }
+    .font-baskerville { font-family: 'Libre Baskerville', Georgia, serif; }
+    .font-merriweather { font-family: 'Merriweather', Georgia, serif; }
+    .font-oldstandard { font-family: 'Old Standard TT', 'Times New Roman', serif; }
+    .font-cinzel .masthead .title { font-family: 'Cinzel', serif; }
+    .font-robotoslab { font-family: 'Roboto Slab', Georgia, serif; }
+    .font-specialelite { font-family: 'Special Elite', 'Courier New', monospace; }
+    .font-imfell { font-family: 'IM Fell English', Georgia, serif; }
+
+    /* Zoom controls */
+    .zoom-bar {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      background: rgba(30,30,30,0.92);
+      border: 1px solid #444;
+      border-radius: 8px;
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 100;
+      backdrop-filter: blur(6px);
+    }
+
+    .zoom-bar button {
+      background: #333;
+      border: 1px solid #555;
+      color: #eee;
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+    }
+
+    .zoom-bar button:hover { background: #444; }
+    .zoom-bar span { font-size: 0.8rem; min-width: 40px; text-align: center; }
+
+    /* Responsive controls */
+    @media (max-width: 900px) {
+      .main-layout { flex-direction: column; }
+      .controls {
+        width: 100%;
+        max-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .newspaper { width: 100%; max-width: 800px; }
+    }
+
+    /* Export modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 10px;
+      width: 100%;
+      max-width: 700px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .modal header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal header h2 {
+      font-size: 1.1rem;
+      color: var(--accent);
+    }
+
+    .modal .close-btn {
+      background: none;
+      border: none;
+      color: #999;
+      font-size: 1.4rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .modal .close-btn:hover { color: #fff; }
+
+    .modal .body {
+      padding: 1rem 1.25rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .modal textarea.code {
+      width: 100%;
+      height: 320px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.75rem;
+      background: #111;
+      border: 1px solid #333;
+      color: #cde;
+      padding: 0.75rem;
+      border-radius: 6px;
+      resize: vertical;
+    }
+
+    .modal .footer {
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid #333;
+      display: flex;
+      gap: 0.5rem;
+      justify-content: flex-end;
+    }
+
+    .hint {
+      font-size: 0.72rem;
+      color: #888;
+      margin-top: 0.3rem;
+      line-height: 1.35;
+    }
+  </style>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <h1>📰 Générateur de Journal</h1>
+      <span class="subtitle">Newspaper Page Builder — prêt à importer</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn secondary" id="btnRandom">🎲 Aléatoire</button>
+      <button class="btn secondary" id="btnReset">↺ Réinitialiser</button>
+      <button class="btn" id="btnExport">⬇️ Exporter HTML</button>
+      <button class="btn" id="btnCopy">📋 Copier le code</button>
+    </div>
+  </header>
+
+  <div class="main-layout">
+    <!-- CONTROLS -->
+    <aside class="controls" id="controls">
+      <div class="control-section">
+        <h3>En-tête (Masthead)</h3>
+        <label>Titre du journal</label>
+        <input type="text" id="npTitle" value="Newspaper">
+        <label>Date</label>
+        <input type="text" id="npDate" value="VENDREDI 19 OCTOBRE 2018">
+        <label>Encadré gauche</label>
+        <input type="text" id="npBoxLeft" value="Quis nostrud exercitation ullamco laboris">
+        <label>Encadré droit</label>
+        <input type="text" id="npBoxRight" value="Lorem ipsum dolor sit amet, consectetur">
+      </div>
+
+      <div class="control-section">
+        <h3>Titre principal</h3>
+        <label>Gros titre</label>
+        <input type="text" id="npHeadline" value="LOREM IPSUM DOLOR">
+        <label>Sous-titre</label>
+        <textarea id="npSubhead" rows="2">Ut enim ad minim veniam, quis nostrud exercitation laboris nisi ut aliquip ex ea commodo consequat</textarea>
+      </div>
+
+      <div class="control-section">
+        <h3>Mise en page</h3>
+        <label>Nombre de colonnes <span class="range-value" id="colsVal">3</span></label>
+        <input type="range" id="npCols" min="1" max="5" value="3">
+        <label>Nombre d'articles <span class="range-value" id="storiesVal">6</span></label>
+        <input type="range" id="npStories" min="2" max="12" value="6">
+        <div class="checkbox-row">
+          <input type="checkbox" id="npFeatured" checked>
+          <label for="npFeatured">Article principal avec image</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="npSmallImages" checked>
+          <label for="npSmallImages">Images sur certains articles</label>
+        </div>
+      </div>
+
+      <div class="control-section">
+        <h3>Typographie</h3>
+        <label>Police de caractères</label>
+        <select id="npFont">
+          <option value="font-baskerville">Libre Baskerville (classique)</option>
+          <option value="font-playfair">Playfair Display (élégant)</option>
+          <option value="font-merriweather">Merriweather (lisible)</option>
+          <option value="font-oldstandard">Old Standard TT (vintage)</option>
+          <option value="font-cinzel">Cinzel (titres majestueux)</option>
+          <option value="font-robotoslab">Roboto Slab (moderne)</option>
+          <option value="font-specialelite">Special Elite (machine à écrire)</option>
+          <option value="font-imfell">IM Fell English (XVIIe siècle)</option>
+        </select>
+        <label>Taille du titre <span class="range-value" id="titleSizeVal">3.2</span>rem</label>
+        <input type="range" id="npTitleSize" min="1.8" max="4.5" step="0.1" value="3.2">
+        <label>Taille du corps <span class="range-value" id="bodySizeVal">0.72</span>rem</label>
+        <input type="range" id="npBodySize" min="0.6" max="0.95" step="0.01" value="0.72">
+      </div>
+
+      <div class="control-section">
+        <h3>Papier & Couleurs</h3>
+        <label>Type de papier</label>
+        <select id="npPaper">
+          <option value="paper-aged">Papier vieilli (défaut)</option>
+          <option value="paper-old">Vieux journal (texture)</option>
+          <option value="paper-sepia">Sépia</option>
+          <option value="paper-vintage">Vintage taches</option>
+          <option value="paper-cream">Crème</option>
+          <option value="paper-white">Blanc moderne</option>
+          <option value="paper-newsprint">Papier journal (lignes)</option>
+        </select>
+        <label>Couleur de fond (personnalisée)</label>
+        <input type="color" id="npBgColor" value="#f0e6d0">
+        <div class="checkbox-row">
+          <input type="checkbox" id="npUseCustomBg">
+          <label for="npUseCustomBg">Utiliser couleur personnalisée</label>
+        </div>
+        <label>Couleur du texte</label>
+        <input type="color" id="npTextColor" value="#1a1a1a">
+      </div>
+
+      <div class="control-section">
+        <h3>Effets spéciaux</h3>
+        <div class="checkbox-row">
+          <input type="checkbox" id="fxFold">
+          <label for="fxFold">Pli central (fold)</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="fxStains" checked>
+          <label for="fxStains">Taches d'âge</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="fxGrain">
+          <label for="fxGrain">Grain / bruit papier</label>
+        </div>
+        <div class="checkbox-row">
+          <input type="checkbox" id="fxTorn">
+          <label for="fxTorn">Bords déchirés</label>
+        </div>
+        <label>Intensité sépia <span class="range-value" id="sepiaVal">0</span>%</label>
+        <input type="range" id="fxSepia" min="0" max="80" value="0">
+        <label>Rotation / inclinaison <span class="range-value" id="rotateVal">0</span>°</label>
+        <input type="range" id="fxRotate" min="-3" max="3" step="0.1" value="0">
+      </div>
+
+      <div class="control-section">
+        <h3>Contenu</h3>
+        <label>Source du texte</label>
+        <select id="npTextSource">
+          <option value="lorem">Lorem Ipsum (classique)</option>
+          <option value="news">Texte journalistique FR</option>
+          <option value="custom">Texte personnalisé</option>
+        </select>
+        <label>Texte personnalisé (optionnel)</label>
+        <textarea id="npCustomText" rows="3" placeholder="Collez votre texte ici… Il sera découpé en articles."></textarea>
+        <div class="hint">Astuce : le texte est automatiquement réparti dans les colonnes et articles.</div>
+      </div>
+    </aside>
+
+    <!-- PREVIEW -->
+    <div class="preview-wrap" id="previewWrap">
+      <div class="preview-scale" id="previewScale">
+        <article class="newspaper paper-aged" id="newspaper">
+          <!-- Generated content goes here -->
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- Zoom -->
+  <div class="zoom-bar">
+    <button id="zoomOut">−</button>
+    <span id="zoomLabel">100%</span>
+    <button id="zoomIn">+</button>
+  </div>
+
+  <!-- Export Modal -->
+  <div class="modal-overlay" id="exportModal">
+    <div class="modal">
+      <header>
+        <h2>Code HTML exportable</h2>
+        <button class="close-btn" id="closeModal">&times;</button>
+      </header>
+      <div class="body">
+        <p class="hint" style="margin-bottom:0.75rem;">
+          Copiez ce code et collez-le dans votre site. C’est autonome (styles inclus). 
+          Vous pouvez aussi télécharger le fichier .html.
+        </p>
+        <textarea class="code" id="exportCode" readonly></textarea>
+      </div>
+      <div class="footer">
+        <button class="btn secondary" id="btnDownload">💾 Télécharger .html</button>
+        <button class="btn" id="btnCopyCode">📋 Copier</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== LOREM & NEWS TEXT =====
+    const LOREM = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.`;
+
+    const NEWS_FR = `Les autorités ont annoncé ce matin de nouvelles mesures destinées à renforcer la sécurité dans les zones urbaines. Selon les experts consultés, cette décision s’inscrit dans une stratégie plus large de prévention. Les habitants des quartiers concernés se disent prudemment optimistes quant aux retombées concrètes. Par ailleurs, le conseil municipal se réunira la semaine prochaine pour examiner le budget prévisionnel de l’année à venir. Plusieurs projets d’infrastructure figurent déjà à l’ordre du jour, notamment la rénovation des espaces verts et l’amélioration des transports en commun. Sur le plan économique, les derniers indicateurs publiés montrent une légère reprise de l’activité dans le secteur industriel. Les analystes restent toutefois prudents face aux incertitudes internationales. Enfin, la météo annonce un week-end ensoleillé sur l’ensemble du territoire, avec des températures au-dessus des normales saisonnières.`;
+
+    const HEADLINES = [
+      "Duis aute irure dolor in reprehenderit",
+      "Excepteur sint occaecat cupidatat non",
+      "Sunt in culpa qui officia deserunt",
+      "Ut enim ad minim veniam",
+      "Occaecat cupidatat",
+      "Exercitation ullamco",
+      "Cillum dolore",
+      "Incididunt ut",
+      "Eu fugiat",
+      "Nemo enim ipsam",
+      "Sed ut perspiciatis",
+      "Voluptatem accusantium"
+    ];
+
+    const HEADLINES_FR = [
+      "Nouvelles mesures de sécurité annoncées",
+      "Le conseil examine le budget 2025",
+      "Reprise économique confirmée",
+      "Météo : un week-end ensoleillé",
+      "Rénovation des espaces verts",
+      "Transports : plan d’amélioration",
+      "Les habitants restent prudents",
+      "Analyse des indicateurs industriels",
+      "Projets d’infrastructure prioritaires",
+      "Stratégie de prévention renforcée",
+      "Réunion extraordinaire prévue",
+      "Perspectives internationales"
+    ];
+
+    // ===== STATE =====
+    let zoom = 1;
+
+    // ===== HELPERS =====
+    function splitText(text, n) {
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      const chunks = [];
+      const per = Math.max(1, Math.ceil(sentences.length / n));
+      for (let i = 0; i < n; i++) {
+        chunks.push(sentences.slice(i * per, (i + 1) * per).join(' ').trim() || sentences[0]);
+      }
+      return chunks;
+    }
+
+    function getTextSource() {
+      const src = document.getElementById('npTextSource').value;
+      if (src === 'custom') {
+        const custom = document.getElementById('npCustomText').value.trim();
+        return custom || LOREM;
+      }
+      if (src === 'news') return NEWS_FR;
+      return LOREM;
+    }
+
+    function getHeadlines() {
+      const src = document.getElementById('npTextSource').value;
+      return src === 'news' ? HEADLINES_FR : HEADLINES;
+    }
+
+    // ===== RENDER =====
+    function render() {
+      const np = document.getElementById('newspaper');
+      const title = document.getElementById('npTitle').value;
+      const date = document.getElementById('npDate').value;
+      const boxL = document.getElementById('npBoxLeft').value;
+      const boxR = document.getElementById('npBoxRight').value;
+      const headline = document.getElementById('npHeadline').value;
+      const subhead = document.getElementById('npSubhead').value;
+      const cols = +document.getElementById('npCols').value;
+      const nStories = +document.getElementById('npStories').value;
+      const featured = document.getElementById('npFeatured').checked;
+      const smallImgs = document.getElementById('npSmallImages').checked;
+      const font = document.getElementById('npFont').value;
+      const paper = document.getElementById('npPaper').value;
+      const useCustomBg = document.getElementById('npUseCustomBg').checked;
+      const bgColor = document.getElementById('npBgColor').value;
+      const textColor = document.getElementById('npTextColor').value;
+      const titleSize = document.getElementById('npTitleSize').value;
+      const bodySize = document.getElementById('npBodySize').value;
+
+      // Effects
+      const fxFold = document.getElementById('fxFold').checked;
+      const fxStains = document.getElementById('fxStains').checked;
+      const fxGrain = document.getElementById('fxGrain').checked;
+      const fxTorn = document.getElementById('fxTorn').checked;
+      const sepia = document.getElementById('fxSepia').value;
+      const rotate = document.getElementById('fxRotate').value;
+
+      // Update labels
+      document.getElementById('colsVal').textContent = cols;
+      document.getElementById('storiesVal').textContent = nStories;
+      document.getElementById('titleSizeVal').textContent = titleSize;
+      document.getElementById('bodySizeVal').textContent = bodySize;
+      document.getElementById('sepiaVal').textContent = sepia;
+      document.getElementById('rotateVal').textContent = rotate;
+
+      // Classes
+      let classes = ['newspaper', paper, font];
+      if (fxFold) classes.push('effect-fold');
+      if (fxStains) classes.push('effect-stains');
+      if (fxGrain) classes.push('effect-grain');
+      if (fxTorn) classes.push('effect-torn');
+      np.className = classes.join(' ');
+
+      // Inline styles
+      np.style.color = textColor;
+      np.style.transform = `rotate(${rotate}deg)`;
+      np.style.filter = sepia > 0 ? `sepia(${sepia / 100})` : '';
+      if (useCustomBg) {
+        np.style.background = bgColor;
+      } else {
+        np.style.background = '';
+      }
+
+      // Build content
+      const text = getTextSource();
+      const heads = getHeadlines();
+      const chunks = splitText(text, nStories);
+
+      let html = `
+        <header class="masthead">
+          <div class="top-row">
+            <div class="box">${esc(boxL)}</div>
+            <div class="box" style="text-align:right">${esc(boxR)}</div>
+          </div>
+          <div class="title" style="font-size:${titleSize}rem">${esc(title)}</div>
+          <div class="date">${esc(date)}</div>
+        </header>
+        <div class="main-headline">
+          <h1>${esc(headline)}</h1>
+          <div class="subhead">${esc(subhead)}</div>
+        </div>
+        <div class="np-body cols-${cols}">
+      `;
+
+      let storyIdx = 0;
+
+      if (featured) {
+        html += `
+          <div class="story featured">
+            <div class="story-img">[ Image principale ]</div>
+            <div class="story-text">
+              <h2>${esc(heads[0])}</h2>
+              <p class="byline">Par la rédaction — Édition du jour</p>
+              <p style="font-size:${bodySize}rem">${esc(chunks[0])}</p>
+            </div>
+          </div>
+        `;
+        storyIdx = 1;
+      }
+
+      for (let i = storyIdx; i < nStories; i++) {
+        const hasImg = smallImgs && (i % 3 === 1);
+        html += `<div class="story">`;
+        if (hasImg) {
+          html += `<div class="story-img-small">[ Illustration ]</div>`;
+        }
+        html += `
+          <h3>${esc(heads[i % heads.length])}</h3>
+          <p style="font-size:${bodySize}rem">${esc(chunks[i] || chunks[0])}</p>
+        </div>`;
+      }
+
+      html += `
+        </div>
+        <footer class="np-footer">
+          © ${new Date().getFullYear()} — Généré avec Newspaper Page Builder — Tous droits réservés
+        </footer>
+      `;
+
+      np.innerHTML = html;
+    }
+
+    function esc(s) {
+      const d = document.createElement('div');
+      d.textContent = s;
+      return d.innerHTML;
+    }
+
+    // ===== EXPORT =====
+    function buildExportHTML() {
+      const np = document.getElementById('newspaper');
+      const clone = np.cloneNode(true);
+      // Remove interactive bits if any
+      const styles = `
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&family=Cinzel:wght@400;700;900&family=Roboto+Slab:wght@300;400;700&family=Special+Elite&family=IM+Fell+English:ital@0;1&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background: #222; display: flex; justify-content: center; padding: 2rem; }
-        
+        ${getComputedNewspaperCSS()}
+      `;
+
+      return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${document.getElementById('npTitle').value} — Journal</title>
+  <style>${styles}</style>
+</head>
+<body>
+  ${clone.outerHTML}
+</body>
+</html>`;
+    }
+
+    function getComputedNewspaperCSS() {
+      // Extract relevant CSS from the page styles
+      return `
 .newspaper {
   width: 800px; max-width: 100%;
   background: #f5f0e6; color: #1a1a1a;
@@ -91,53 +1115,125 @@
 .font-robotoslab { font-family: 'Roboto Slab', Georgia, serif; }
 .font-specialelite { font-family: 'Special Elite', 'Courier New', monospace; }
 .font-imfell { font-family: 'IM Fell English', Georgia, serif; }
-      
-      </style>
-</head>
-<body>
-  <article class="newspaper paper-aged font-baskerville effect-stains" id="newspaper" style="color: rgb(26, 26, 26); transform: rotate(0deg);">
-        <header class="masthead">
-          <div class="top-row">
-            <div class="box">Quis nostrud exercitation ullamco laboris</div>
-            <div class="box" style="text-align:right">Lorem ipsum dolor sit amet, consectetur</div>
-          </div>
-          <div class="title" style="font-size:3.2rem">Newspaper</div>
-          <div class="date">VENDREDI 19 OCTOBRE 2018</div>
-        </header>
-        <div class="main-headline">
-          <h1>LOREM IPSUM DOLOR</h1>
-          <div class="subhead">Ut enim ad minim veniam, quis nostrud exercitation laboris nisi ut aliquip ex ea commodo consequat</div>
-        </div>
-        <div class="np-body cols-3">
-      
-          <div class="story featured">
-            <div class="story-img">[ Image principale ]</div>
-            <div class="story-text">
-              <h2>Duis aute irure dolor in reprehenderit</h2>
-              <p class="byline">Par la rédaction — Édition du jour</p>
-              <p style="font-size:0.72rem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.  Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-            </div>
-          </div>
-        <div class="story"><div class="story-img-small">[ Illustration ]</div>
-          <h3>Excepteur sint occaecat cupidatat non</h3>
-          <p style="font-size:0.72rem">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.  Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-        </div><div class="story">
-          <h3>Sunt in culpa qui officia deserunt</h3>
-          <p style="font-size:0.72rem">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.  Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
-        </div><div class="story">
-          <h3>Ut enim ad minim veniam</h3>
-          <p style="font-size:0.72rem">Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit.</p>
-        </div><div class="story"><div class="story-img-small">[ Illustration ]</div>
-          <h3>Occaecat cupidatat</h3>
-          <p style="font-size:0.72rem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </div><div class="story">
-          <h3>Exercitation ullamco</h3>
-          <p style="font-size:0.72rem">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-        </div>
-        </div>
-        <footer class="np-footer">
-          © 2026 — Généré avec Newspaper Page Builder — Tous droits réservés
-        </footer>
-      </article>
+      `;
+    }
+
+    // ===== EVENTS =====
+    function bindEvents() {
+      const inputs = document.querySelectorAll('#controls input, #controls select, #controls textarea');
+      inputs.forEach(el => {
+        el.addEventListener('input', render);
+        el.addEventListener('change', render);
+      });
+
+      document.getElementById('btnRandom').addEventListener('click', randomize);
+      document.getElementById('btnReset').addEventListener('click', resetDefaults);
+      document.getElementById('btnExport').addEventListener('click', () => {
+        document.getElementById('exportCode').value = buildExportHTML();
+        document.getElementById('exportModal').classList.add('open');
+      });
+      document.getElementById('btnCopy').addEventListener('click', () => {
+        const code = buildExportHTML();
+        navigator.clipboard.writeText(code).then(() => {
+          const btn = document.getElementById('btnCopy');
+          const old = btn.textContent;
+          btn.textContent = '✓ Copié !';
+          setTimeout(() => btn.textContent = old, 1500);
+        });
+      });
+      document.getElementById('closeModal').addEventListener('click', () => {
+        document.getElementById('exportModal').classList.remove('open');
+      });
+      document.getElementById('btnCopyCode').addEventListener('click', () => {
+        const ta = document.getElementById('exportCode');
+        ta.select();
+        navigator.clipboard.writeText(ta.value).then(() => {
+          const btn = document.getElementById('btnCopyCode');
+          btn.textContent = '✓ Copié !';
+          setTimeout(() => btn.textContent = '📋 Copier', 1500);
+        });
+      });
+      document.getElementById('btnDownload').addEventListener('click', () => {
+        const code = document.getElementById('exportCode').value;
+        const blob = new Blob([code], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'journal-' + (document.getElementById('npTitle').value || 'newspaper').toLowerCase().replace(/\s+/g, '-') + '.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      // Zoom
+      document.getElementById('zoomIn').addEventListener('click', () => {
+        zoom = Math.min(1.5, zoom + 0.1);
+        applyZoom();
+      });
+      document.getElementById('zoomOut').addEventListener('click', () => {
+        zoom = Math.max(0.4, zoom - 0.1);
+        applyZoom();
+      });
+
+      // Close modal on backdrop
+      document.getElementById('exportModal').addEventListener('click', (e) => {
+        if (e.target.id === 'exportModal') e.target.classList.remove('open');
+      });
+    }
+
+    function applyZoom() {
+      document.getElementById('previewScale').style.transform = `scale(${zoom})`;
+      document.getElementById('zoomLabel').textContent = Math.round(zoom * 100) + '%';
+    }
+
+    function randomize() {
+      const papers = ['paper-aged','paper-old','paper-sepia','paper-vintage','paper-cream','paper-newsprint'];
+      const fonts = ['font-baskerville','font-playfair','font-merriweather','font-oldstandard','font-cinzel','font-robotoslab','font-specialelite','font-imfell'];
+      document.getElementById('npCols').value = 2 + Math.floor(Math.random() * 3);
+      document.getElementById('npStories').value = 4 + Math.floor(Math.random() * 6);
+      document.getElementById('npPaper').value = papers[Math.floor(Math.random() * papers.length)];
+      document.getElementById('npFont').value = fonts[Math.floor(Math.random() * fonts.length)];
+      document.getElementById('fxFold').checked = Math.random() > 0.5;
+      document.getElementById('fxStains').checked = Math.random() > 0.3;
+      document.getElementById('fxGrain').checked = Math.random() > 0.6;
+      document.getElementById('fxTorn').checked = Math.random() > 0.7;
+      document.getElementById('fxSepia').value = Math.floor(Math.random() * 40);
+      document.getElementById('fxRotate').value = (Math.random() * 2 - 1).toFixed(1);
+      document.getElementById('npTitleSize').value = (2.5 + Math.random() * 1.5).toFixed(1);
+      document.getElementById('npFeatured').checked = Math.random() > 0.3;
+      render();
+    }
+
+    function resetDefaults() {
+      document.getElementById('npTitle').value = 'Newspaper';
+      document.getElementById('npDate').value = 'VENDREDI 19 OCTOBRE 2018';
+      document.getElementById('npBoxLeft').value = 'Quis nostrud exercitation ullamco laboris';
+      document.getElementById('npBoxRight').value = 'Lorem ipsum dolor sit amet, consectetur';
+      document.getElementById('npHeadline').value = 'LOREM IPSUM DOLOR';
+      document.getElementById('npSubhead').value = 'Ut enim ad minim veniam, quis nostrud exercitation laboris nisi ut aliquip ex ea commodo consequat';
+      document.getElementById('npCols').value = 3;
+      document.getElementById('npStories').value = 6;
+      document.getElementById('npFeatured').checked = true;
+      document.getElementById('npSmallImages').checked = true;
+      document.getElementById('npFont').value = 'font-baskerville';
+      document.getElementById('npTitleSize').value = 3.2;
+      document.getElementById('npBodySize').value = 0.72;
+      document.getElementById('npPaper').value = 'paper-aged';
+      document.getElementById('npUseCustomBg').checked = false;
+      document.getElementById('npBgColor').value = '#f0e6d0';
+      document.getElementById('npTextColor').value = '#1a1a1a';
+      document.getElementById('fxFold').checked = false;
+      document.getElementById('fxStains').checked = true;
+      document.getElementById('fxGrain').checked = false;
+      document.getElementById('fxTorn').checked = false;
+      document.getElementById('fxSepia').value = 0;
+      document.getElementById('fxRotate').value = 0;
+      document.getElementById('npTextSource').value = 'lorem';
+      document.getElementById('npCustomText').value = '';
+      render();
+    }
+
+    // Init
+    bindEvents();
+    render();
+  </script>
 </body>
 </html>
