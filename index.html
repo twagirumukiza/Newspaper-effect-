@@ -499,7 +499,7 @@
       margin: 4px 0;
     }
 
-    /* Footer */
+    /* Footer (inside newspaper) */
     .np-footer {
       margin-top: 16px;
       padding-top: 8px;
@@ -520,6 +520,54 @@
     .font-robotoslab { font-family: 'Roboto Slab', Georgia, serif; }
     .font-specialelite { font-family: 'Special Elite', 'Courier New', monospace; }
     .font-imfell { font-family: 'IM Fell English', Georgia, serif; }
+
+    /* Site footer (générateur) */
+    .site-footer {
+      background: #141414;
+      border-top: 1px solid #333;
+      padding: 0.7rem 1.5rem;
+      text-align: center;
+      font-size: 0.78rem;
+      color: #999;
+      flex-shrink: 0;
+    }
+    .site-footer-inner {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0.4rem 0.6rem;
+    }
+    .site-footer .site-sig {
+      font-weight: 600;
+      font-style: italic;
+      color: var(--accent);
+    }
+    .site-footer .site-sep {
+      color: #555;
+    }
+    .site-footer a {
+      color: #7eb8d4;
+      text-decoration: none;
+    }
+    .site-footer a:hover {
+      text-decoration: underline;
+      color: #a8d4ea;
+    }
+    .site-footer .site-license-btn {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: inherit;
+      font-family: inherit;
+      cursor: pointer;
+      padding: 0;
+      text-decoration: none;
+    }
+    .site-footer .site-license-btn:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
 
     /* Zoom controls */
     .zoom-bar {
@@ -791,6 +839,36 @@
     </div>
   </div>
 
+  <!-- Site footer (générateur) -->
+  <footer class="site-footer">
+    <div class="site-footer-inner">
+      <span class="site-sig">By twagirumukiza</span>
+      <span class="site-sep">·</span>
+      <button type="button" class="site-license-btn" id="btnLicense">Licence / CGU</button>
+      <span class="site-sep">·</span>
+      <a href="https://www.linkedin.com/in/twagirumukiza" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </footer>
+
+  <!-- Licence modal -->
+  <div class="modal-overlay" id="licenseModal">
+    <div class="modal" style="max-width:480px">
+      <header>
+        <h2>Licence / Conditions générales d’utilisation</h2>
+        <button class="close-btn" id="closeLicenseModal">&times;</button>
+      </header>
+      <div class="body" style="font-size:0.9rem; line-height:1.55; color:#ccc">
+        <p><strong>Usage privé autorisé.</strong></p>
+        <p>Vous êtes libre d’utiliser ce générateur et les pages créées pour un usage personnel, éducatif ou non commercial.</p>
+        <p><strong>Commercialisation :</strong> toute utilisation commerciale (vente, intégration dans un produit payant, revente de templates, etc.) nécessite mon accord préalable. Merci de me contacter.</p>
+        <p style="margin-top:1rem; font-size:0.8rem; color:#888">By twagirumukiza · <a href="https://www.linkedin.com/in/twagirumukiza" target="_blank" rel="noopener" style="color:#7eb8d4">LinkedIn</a></p>
+      </div>
+      <div class="footer">
+        <button class="btn" id="btnCloseLicense">Fermer</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Zoom -->
   <div class="zoom-bar">
     <button id="zoomOut">−</button>
@@ -991,7 +1069,7 @@
       html += `
         </div>
         <footer class="np-footer">
-          © ${new Date().getFullYear()} — Généré avec Newspaper Page Builder — Tous droits réservés
+          © ${new Date().getFullYear()} — Page générée avec Newspaper Page Builder
         </footer>
       `;
 
@@ -1006,6 +1084,8 @@
 
     // ===== EXPORT =====
     function buildExportHTML() {
+      // Force update so signature / licence / LinkedIn are always current
+      render();
       const np = document.getElementById('newspaper');
       const clone = np.cloneNode(true);
       // Remove interactive bits if any
@@ -1176,6 +1256,16 @@
       // Close modal on backdrop
       document.getElementById('exportModal').addEventListener('click', (e) => {
         if (e.target.id === 'exportModal') e.target.classList.remove('open');
+      });
+
+      // Licence / CGU modal
+      const openLicense = () => document.getElementById('licenseModal').classList.add('open');
+      const closeLicense = () => document.getElementById('licenseModal').classList.remove('open');
+      document.getElementById('btnLicense').addEventListener('click', openLicense);
+      document.getElementById('closeLicenseModal').addEventListener('click', closeLicense);
+      document.getElementById('btnCloseLicense').addEventListener('click', closeLicense);
+      document.getElementById('licenseModal').addEventListener('click', (e) => {
+        if (e.target.id === 'licenseModal') closeLicense();
       });
     }
 
